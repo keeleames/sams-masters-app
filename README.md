@@ -2,6 +2,8 @@
 
 Roku app for watching the Masters.com streams and videos with leaderboards.
 
+*Buy Me A Beer or a Tee Time* venmo: `@Sam-Heavner`
+
 ### Live Stream and Masters Vault
 
 ![home](./home-scoreboard.png)
@@ -81,4 +83,3 @@ Assets:
 - If deploying from VS Code fails, confirm `.env` has correct `roku_host` and `roku_pass` values.
 - Increase the request timeout in [src/components/api/MastersApi.bs](src/components/api/MastersApi.bs) if network requests time out.
 
-License:
