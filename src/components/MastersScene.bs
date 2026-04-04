@@ -7,6 +7,7 @@ function init()
   m.videoLeaderboard = m.top.findNode("videoLeaderboard")
   m.videoLeaderboard.observeFieldScoped("focusedChild", "onVideoLeaderboardFocused")
   m.video.observeFieldScoped("focusedChild", "onVideoFocused")
+  m.video.observeFieldScoped("state", "onVideoStateChanged")
 
   m.button = m.top.findNode("button")
   m.video.trickplayBar.update({
@@ -47,6 +48,15 @@ function onVideoLeaderboardFocused()
       width: 1920
       height: 1080
     })
+  end if
+end function
+
+function onVideoStateChanged()
+  if m.video.state = "error" and m.video.content?.backupUrl <> invalid and m.video.content?.backupUrl <> ""then
+    m.video.content.url = m.video.content.backupUrl
+    m.video.content.backupUrl = ""
+    m.video.control = "stop"
+    m.video.control = "play"
   end if
 end function
 
@@ -163,14 +173,19 @@ function parseLiveStreams(event)
     node.shortDescriptionLine1 = channel.carousel_header
     node.shortDescriptionLine2 = channel.carousel_title
     node.playStart = 999999
-
+    backupUrl = invalid
     ' Map the first available desktop URL as the stream URL
     if channel.desktop <> invalid and channel.desktop.count() > 0
       node.url = channel.desktop[0].url
+      if channel.desktop[1] <> invalid then
+        backupUrl = channel.desktop[1].url
+      end if
+    else
     end if
     node.live = true
     node.addFields({
       active: channel.live
+      backupUrl: backupUrl
     })
     if node.id <> "radio"
       content.insertChild(node, 0)
@@ -220,7 +235,7 @@ end function
 
 function onRowItemSelected(event)
   index = event.getData()
-  content = m.livefeeds.content.getChild(index[0]).getChild(index[1])
+  content = m.livefeeds.content.getChild(index[0]).getChild(index[1]).clone(false)
   m.video.content = content
   m.video.control = "play"
   onButtonSelected()

@@ -112,10 +112,15 @@ function onContent()
           uri: `pkg:/images/${url}.png`
           visible: url <> ""
         })
+      else
+        row.getChild(s + 1).getChild(0).text = ""
+        row.getChild(s + 1).getChild(1).visible = false
       end if
     end for
     if round.total <> invalid then
       row.getChild(19).getChild(0).text = round.total.toStr()
+    else
+      row.getChild(19).getChild(0).text = ""
     end if
   end for
 end function
