@@ -198,6 +198,18 @@ function parseLiveStreams(event)
   response = event.getData()
   content = createObject("roSGNode", "ContentNode")
   content.title = "Live Streams"
+
+  for each channel in response.channels
+    node = createObject("roSGNode", "ContentNode")
+    node.id = channel.channelId
+    node.title = channel.name
+    node.hdPosterUrl = channel.imagePath
+    node.description = channel.caption
+    node.shortDescriptionLine1 = channel.carousel_header
+    node.shortDescriptionLine2 = channel.carousel_title
+    node.playStart = 999999
+    ' node.maxBandwidth = 1100
+    cdns = []
     for each cdn in channel.desktop
       if node.url = invalid or node.url = "" then
         node.url = cdn.url
@@ -206,11 +218,20 @@ function parseLiveStreams(event)
       end if
     end for
     node.live = true
-    node.streamFormat = "hls" ' <--- ADD THIS LINE
+    
+    ' THIS IS THE CORRECT SPOT
+    node.streamFormat = "hls" 
+    
     node.addFields({
       active: channel.live
       cdns: cdns
     })
+    if node.id <> "radio"
+      content.insertChild(node, 0)
+    end if
+  end for
+  return content
+end function
 
   for each channel in response.channels
 
@@ -255,7 +276,12 @@ end function
 
 function onVideoVault(event)
   response = event.getData()
-for each video in category.items
+
+  for each category in response.content[2].videoPlaylist
+    row = createObject("roSGNode", "ContentNode")
+    row.title = category.title
+
+    for each video in category.items
       node = createObject("roSGNode", "ContentNode")
       node.id = video.id
       node.title = video.title
@@ -263,9 +289,22 @@ for each video in category.items
       node.hdPosterUrl = video.thumbImage
       node.length = video.metadata.duration
       node.url = video.media.m3u8 ?? video.media.mp4
-      node.streamFormat = "hls" ' <--- ADD THIS LINE
+      
+      ' THIS IS THE CORRECT SPOT
+      node.streamFormat = "hls" 
+      
       row.appendChild(node)
     end for
+
+    if row.getChildCount() > 0
+      m.root.appendChild(row)
+    end if
+  end for
+
+  m.livefeeds.content = m.root
+  m.livefeeds.setFocus(true)
+  m.livefeeds.observeFieldScoped("rowItemSelected", "onRowItemSelected")
+end function
 
   for each category in response.content[2].videoPlaylist
     row = createObject("roSGNode", "ContentNode")
