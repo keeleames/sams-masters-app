@@ -269,31 +269,6 @@ function onVideoVault(event)
   m.livefeeds.observeFieldScoped("rowItemSelected", "onRowItemSelected")
 end function
 
-  for each category in response.content[2].videoPlaylist
-    row = createObject("roSGNode", "ContentNode")
-    row.title = category.title
-
-    for each video in category.items
-      node = createObject("roSGNode", "ContentNode")
-      node.id = video.id
-      node.title = video.title
-      node.description = video.description
-      node.hdPosterUrl = video.thumbImage
-      node.length = video.metadata.duration
-      node.url = video.media.m3u8 ?? video.media.mp4
-      row.appendChild(node)
-    end for
-
-    if row.getChildCount() > 0
-      m.root.appendChild(row)
-    end if
-  end for
-
-  m.livefeeds.content = m.root
-  m.livefeeds.setFocus(true)
-  m.livefeeds.observeFieldScoped("rowItemSelected", "onRowItemSelected")
-end function
-
 
 function onRowItemSelected(event)
   index = event.getData()
