@@ -198,7 +198,19 @@ function parseLiveStreams(event)
   response = event.getData()
   content = createObject("roSGNode", "ContentNode")
   content.title = "Live Streams"
-
+    for each cdn in channel.desktop
+      if node.url = invalid or node.url = "" then
+        node.url = cdn.url
+      else
+        cdns.push(cdn.url)
+      end if
+    end for
+    node.live = true
+    node.streamFormat = "hls" ' <--- ADD THIS LINE
+    node.addFields({
+      active: channel.live
+      cdns: cdns
+    })
 
   for each channel in response.channels
 
@@ -243,6 +255,17 @@ end function
 
 function onVideoVault(event)
   response = event.getData()
+for each video in category.items
+      node = createObject("roSGNode", "ContentNode")
+      node.id = video.id
+      node.title = video.title
+      node.description = video.description
+      node.hdPosterUrl = video.thumbImage
+      node.length = video.metadata.duration
+      node.url = video.media.m3u8 ?? video.media.mp4
+      node.streamFormat = "hls" ' <--- ADD THIS LINE
+      row.appendChild(node)
+    end for
 
   for each category in response.content[2].videoPlaylist
     row = createObject("roSGNode", "ContentNode")
